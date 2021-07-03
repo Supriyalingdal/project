@@ -1,15 +1,28 @@
 <?php
 session_start();
 require_once('../connection.php');
-$admin = $_SESSION['admin'];
-if ($admin == "") {
-    header('location:index.php');
+
+$user = $_SESSION['user'];
+if ($user == "") {
+    header('location:../index.php');
+} else {
+    $stud =  mysqli_query($con, "SELECT * from registration where usn = '$user'");
 }
-include('count.php');
+$row = mysqli_fetch_array($stud);
+$sem = $row['sem'];
+
+$q = mysqli_query($con, "select * from sub_reg where usn='" . $_SESSION['user'] . "'");
+$rr = mysqli_num_rows($q);
+if (!$rr) {
+    $exerrr = "<font color='red';font-family:'Acme';>You have not Registered for Exam Yet!</font>";
+} else {
+    $exerrr = "<font color='primary'>You Application has Been Submitted already..! </font>";
+}
+
 ?>
 
 <!-- dashboard.php -->
-<!-- ADMIN DASHBOARD -->
+<!-- Student DASHBOARD -->
 <!DOCTYPE html>
 <html lang="en">
 
@@ -17,11 +30,10 @@ include('count.php');
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-    <meta name="description" content="">
-    <meta name="author" content="">
-    <title>Admin Dashboard.!</title>
+    <meta name="author" content="supriya">
+    <title>User Dashboard.!</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous" />
 
     <!-- Bootstrap core CSS -->
     <link href="../css/bootstrap.min.css" rel="stylesheet">
@@ -30,7 +42,7 @@ include('count.php');
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
 
     <!-- Custom styles for this template -->
-    <link href="../css/dashboard.css" rel="stylesheet">
+    <link href="styles.css" rel="stylesheet">
     <!--Custom Favicon -->
     <link rel="icon" type="image/png" sizes="64x64" href="../css/images/logo.png">
     <style>
@@ -39,22 +51,6 @@ include('count.php');
             bottom: 25px;
             right: 25px;
             display: none;
-        }
-
-        .card {
-            background-color: #a3f7bf;
-            border: 4px solid black;
-
-        }
-
-        .card-title {
-            color: #4a47a3;
-        }
-
-        .card {
-            /* Add shadows to create the "card" effect */
-            box-shadow: 0 4px 8px 0 rgba(0, 0, 220, 2);
-            transition: 0.7s;
         }
 
         .label1 {
@@ -68,11 +64,6 @@ include('count.php');
 
         .hov a:hover {
             color: red;
-        }
-
-        /* On mouse-over, add a deeper shadow */
-        .card:hover {
-            box-shadow: 7px 8px 16px 5px rgba(0, 0, 33, 2);
         }
 
         body {
@@ -90,18 +81,18 @@ include('count.php');
         .wrapper .sidebar {
             width: 200px;
             height: 100%;
-            background: green;
+            background: orange;
             padding: 30px 0px;
             border: 2px solid black;
             position: fixed;
             overflow-x: scroll;
-            margin-bottom: 5%;
             font-family: 'Acme';
             font-size: 18px;
+            margin-bottom: 5%;
         }
 
         .wrapper .sidebar h2 {
-            color: #fff;
+            color: white;
             text-transform: uppercase;
             text-align: center;
             margin-bottom: 30px;
@@ -132,7 +123,7 @@ include('count.php');
         }
 
         .wrapper .sidebar ul li a {
-            color: #fff;
+            color: #f00;
             text-decoration: none;
             display: block;
         }
@@ -142,7 +133,7 @@ include('count.php');
         }
 
         .wrapper .sidebar ul li:hover {
-            background-color: #ad1457;
+            background-color: orange;
             text-decoration: none;
         }
 
@@ -253,7 +244,7 @@ include('count.php');
 </head>
 
 <body>
-    <nav class="navbar navbar-inverse navbar-fixed-top" style="padding:8px;border:none;background-color:orange;border-bottom:1px solid black;box-shadow: 3px 3px 5px black;">
+    <nav class="navbar navbar-inverse navbar-fixed-top" style="position:fixed;top:0;left:0;padding:8px;border:none;background-color:green;border-bottom:1px solid black;box-shadow: 3px 3px 5px black;">
         <div class="container-fluid">
             <div class="navbar-header">
                 <a class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
@@ -262,10 +253,10 @@ include('count.php');
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </a>
-                <a class="navbar-brand text-white" style="font-family:'Acme';font-size:30px;color: white;" href="#">Welcome, Admin</a>
+                <a class="navbar-brand text-white" style="font-family:'Acme';font-size:30px;color: white;padding-right: 750px;" href="#">Welcome, <?php echo '' . $row['fname'] . ' ' . $row['lname']; ?> </a>
 
             </div>
-            <ul class="nav navbar-nav navbar-right collapsed hide-on-med-and-down text-white hide-on-med" id="navbar">
+            <ul class="nav navbar-nav navbar-right collapsed text-white" id="navbar">
                 <li>
                     <a class="mnav11" style="color:white;font-family:'Acme';font-size:25px;" href="../logout.php?logout"><i class="fas fa-sign-out-alt" aria-hidden="true"></i> Logout</a>
                 </li>
@@ -273,133 +264,106 @@ include('count.php');
     </nav>
 
     <div class="wrapper">
-        <div class="sidebar col -l2 -s6">
+        <div class="sidebar col -l2 -s4">
             <ul>
                 <div>
-                    <img class="img1" src="../css/images/logo.png" width="100" height="100" alt="not found" />
+                    <img src="../images/<?php echo $_SESSION['user']; ?>/<?php echo $row['image']; ?>" width="100" height="100" alt="not found" />
                 </div>
                 <li><a href="dashboard.php"><i class="fas fa-clipboard"></i>Dashboard</a></li>
-                <li><a href="dashboard.php?page=manage_users"><i class="fas fa-users"></i>SEE Students</a></li>
-                <li><a href="dashboard.php?page=manage_sub_fst"><i class="fas fa-bars"></i>Fastrack Students </a></li>
-                <li>
-                    <div class="mdbtn">
-                        <button class="dropdown-btn"><i class="fas fa-plus"></i>
-                            Add Subject [SEE]
-                            <i class="fa fa-caret-down"></i>
-                        </button>
-                        <div class="dropdown-container">
-                            <ul>
-                                <li style="padding:5px;"><a href="dashboard.php?page=add_s1">Semester 1</a></li>
-                                <li style="padding:5px;"><a href="dashboard.php?page=add_s2">Semester 2</a></li>
-                                <li style="padding:5px;"><a href="dashboard.php?page=add_s3">Semester 3</a></li>
-                                <li style="padding:5px;"><a href="dashboard.php?page=add_s4">Semester 4</a></li>
-                                <li style="padding:5px;"><a href="dashboard.php?page=add_s5">Semester 5</a></li>
-                                <li style="padding:5px;"><a href="dashboard.php?page=add_s6">Semester 6</a></li>
-                                <li style="padding:5px;"><a href="dashboard.php?page=add_s7">Semester 7</a></li>
-                                <li style="padding:5px;"><a href="dashboard.php?page=add_s8">Semester 8</a></li>
-                            </ul>
-                        </div>
-                    </div>
-                </li>
-                
+                <li><a href="dashboard.php?page=update_profile"><i class="fas fa-user-edit"></i> Update Profile</a></li>
+                <li><a href="dashboard.php?page=register"><i class="fas fa-pen"></i>Register For SEE Exam</a></li>
+                <li><a href="dashboard.php?page=reg_fast"><i class="fas fa-pen"></i>Register For Fasttrack Exam</a></li>
+                <li><a href="dashboard.php?page=subjects_reg"><i class="far fa-file"></i>SEE Registered Subjects</a></li>
+		<li><a href="dashboard.php?page=fast_reg_disp"><i class="far fa-file"></i> Fasttrack Registered Subjects</a></li>
             </ul>
         </div>
         <div class="col-sm-12 col-sm-offset-12 col-md-10 col-md-offset-2 main">
             <!-- container-->
-<div class="main_content">
-                    <div><h1 class="page-header label1" style="font-family: 'Bree serif', serif;">STUDENT EXAMINATION REGISTRATION</h1></div>
-		    
+
             <?php
             @$page =  $_GET['page'];
             if ($page != "") {
-                if ($page == "add_s1") {
-                    include('add_see/add_s1.php');
+                if ($page == "register") {
+                    if ($sem == 1 && !$rr) {
+                        if (!$rr) {
+                            include('4th_sem.php');
+                        } else {
+                            echo "<h2 style='font-family:Bitter;margin-left: 2%;font-weight:600;'>$exerrr</h2>";
+                        }
+                    }
+                    if ($sem == 2) {
+                        if (!$rr) {
+                            include('4th_sem.php');
+                        } else {
+                            echo "<h2 style='font-family:Bitter;margin-left: 2%;font-weight:600;'>$exerrr</h2>";
+                        }
+                    }
+                    if ($sem == 3) {
+                        if (!$rr) {
+                            include('3rd_sem.php');
+                        } else {
+                            echo "<h2 style='font-family:Bitter;margin-left: 2%;font-weight:600;'>$exerrr</h2>";
+                        }
+                    }
+                    if ($sem == 4) {
+                        if (!$rr) {
+                            include('4th_sem.php');
+                        } else {
+                            echo "<h2 style='font-family:Bitter;margin-left: 2%;font-weight:600;'>$exerrr</h2>";
+                        }
+                    }
+                    if ($sem == 5) {
+                        if (!$rr) {
+                            include('4th_sem.php');
+                        } else {
+                            echo "<h2 style='font-family:Bitter;margin-left: 2%;font-weight:600;'>$exerrr</h2>";
+                        }
+                    }
+                    if ($sem == 6) {
+                        if (!$rr) {
+                            include('4th_sem.php');
+                        } else {
+                            echo "<h2 style='font-family:Bitter;margin-left: 2%;font-weight:600;'>$exerrr</h2>";
+                        }
+                    }
+                    if ($sem == 7) {
+                        if (!$rr) {
+                            include('4th_sem.php');
+                        } else {
+                            echo "<h2 style='font-family:Bitter;margin-left: 2%;font-weight:600;'>$exerrr</h2>";
+                        }
+                    }
+                    if ($sem == 8) {
+                        if (!$rr) {
+                            include('4th_sem.php');
+                        } else {
+                            echo "<h2 style='font-family:Bitter;margin-left: 2%;font-weight:600;'>$exerrr</h2>";
+                        }
+                    }
                 }
 
-                if ($page == "add_s2") {
-                    include('add_see/add_s2.php');
+                if ($page == "update_profile") {
+                    include('update_profile.php');
                 }
 
-                if ($page == "add_s3") {
-                    include('add_see/add_s3.php');
-                }
+                if ($page == "subjects_reg") {
+                    include('subjects_reg.php');}
 
-                if ($page == "add_s4") {
-                    include('add_see/add_s4.php');
-                }
+		if ($page == "reg_fast") {
+                    include('reg_fast.php');}
 
-                if ($page == "add_s5") {
-                    include('add_see/add_s5.php');
-                }
+		if ($page == "fast_reg_disp") {
+                    include('fast_reg_disp.php');
 
-                if ($page == "add_s6") {
-                    include('add_see/add_s6.php');
-                }
-
-                if ($page == "add_s7") {
-                    include('add_see/add_s7.php');
-                }
-
-                if ($page == "add_s8") {
-                    include('add_see/add_s8.php');
-                }
-
-                if ($page == "manage_users") {
-                    include('manage_users.php');
-                }
-
-                if ($page == "disp_s1") {
-                    include('disp_see/disp_s1.php');
-                }
-
-                if ($page == "disp_s2") {
-                    include('disp_see/disp_s2.php');
-                }
-
-                if ($page == "disp_s3") {
-                    include('disp_see/disp_s3.php');
-                }
-
-                if ($page == "disp_s4") {
-                    include('disp_see/disp_s4.php');
-                }
-
-                if ($page == "disp_s5") {
-                    include('disp_see/disp_s5.php');
-                }
-
-                if ($page == "disp_s6") {
-                    include('disp_see/disp_s6.php');
-                }
-
-                if ($page == "disp_s7") {
-                    include('disp_see/disp_s7.php');
-                }
-
-                if ($page == "disp_s8") {
-                    include('disp_see/disp_s8.php');
-                }
-                if ($page == "manage_users_fst") {
-                    include('manage_users_fst.php');
-                }
-                if ($page == "add_fst") {
-                    include('add_fst/add_fst_sub.php');
-                }
-                if ($page == "manage_sub_fst") {
-                    include('add_fst/manage_fst.php');
                 }
             } else {
-            ?>
+            ?><h2 style="font-family:'Bitter';margin-left: 2%;font-weight:600;"><?php echo @$exerrr; ?></h2>
+
                 <!-- container end-->
 
+         
 
-
-
-
-
-                
             <?php } ?>
-
 
 
             <a id="back-to-top" style="color:#fff;background-color:#5a0533;border:2px solid black;" href="#" class="btn-light btn-lg back-to-top" role="button"><i class="fas fa-arrow-up"></i></a>
@@ -420,20 +384,6 @@ include('count.php');
                     });
                 }
             </script>
-
-            <!-- Bootstrap core JavaScript
-    ================================================== -->
-            <!-- Placed at the end of the document so the pages load faster -->
-            <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-            <script>
-                window.jQuery || document.write('<script src="../js/vendor/jquery.min.js"><\/script>')
-            </script>
-            <script src="../js/disable.js"></script>
-            <script src="../js/scroll.js"></script>
-            <script src="../js/bootstrap.min.js"></script>
-            <!-- Just to make our placeholder images work. Don't actually copy the next line! -->
-            <script src="../js/vendor/holder.min.js"></script>
-
 </body>
 
 </html>
